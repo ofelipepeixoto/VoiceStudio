@@ -35,8 +35,9 @@ bytes exactly at the writer limit. These checks import neither the application
 nor model engines and make no model or service calls.
 
 The original audited regression run reproduced both unbounded reads before the
-patch and passed all three boundary tests after the patch. This PR also runs the
-repository upload-suffix guard and Python syntax/diff checks. No full-suite,
+patch and passed all three boundary tests after the patch. This PR passed 17
+tests: the three boundaries, the existing upload-suffix guard and 13 changelog
+style checks. Python syntax and diff checks also passed. No full-suite,
 inference/GPU, browser/E2E, multipart parsing, OS matrix or deployment claim is
 made by these focused checks. GitHub Actions have not been enabled in the fork.
 

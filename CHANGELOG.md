@@ -11,6 +11,11 @@ metadata and the backend fallback mirror it.
 **Highlights**
 
 - The open-source app no longer contains a licence-key client
+- Voice reference and consent uploads enforce the existing size cap in the Radar study fork
+
+### Fixed
+
+- Voice reference and consent uploads reject oversized recordings before decoding or database persistence (#1)
 
 ### Removed
 
