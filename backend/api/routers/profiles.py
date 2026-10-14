@@ -200,8 +200,12 @@ async def create_profile(
         audio_path = os.path.join(VOICES_DIR, audio_filename)
         # Storage can be removed after startup; recover before persisting uploads.
         os.makedirs(VOICES_DIR, exist_ok=True)
-        with open(audio_path, "wb") as f:
-            f.write(await ref_audio.read())
+        try:
+            await _save_upload(ref_audio, audio_path)
+        except BaseException:
+            with contextlib.suppress(OSError):
+                os.remove(audio_path)
+            raise
         # A clone needs speech to copy: refuse a reference with no audio
         # stream (a silent screen recording, a video-only WebM) at save time
         # instead of failing every later generation with it.
@@ -1038,7 +1042,9 @@ async def record_consent(
 ):
     if not consent_text.strip():
         raise HTTPException(status_code=422, detail="consent_text must not be empty")
-    data = await consent_audio.read()
+    data = await consent_audio.read(_MAX_REF_AUDIO_BYTES + 1)
+    if len(data) > _MAX_REF_AUDIO_BYTES:
+        raise HTTPException(status_code=413, detail="Consent recording is too large.")
     if len(data) < _MIN_CONSENT_AUDIO_BYTES:
         raise HTTPException(status_code=422, detail="consent recording is too short")
 
